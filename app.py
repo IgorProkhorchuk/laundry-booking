@@ -12,12 +12,12 @@ def get_db_connection():
 def get_week_dates():
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday())  # Get the latest Monday
-    return [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(5)]
+    return [(start_of_week + timedelta(days=i)).strftime('%Y-%B-%d') for i in range(5)]
 
 @app.route('/')
 def index():
     week_dates = get_week_dates()
-    timeslots = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM', '03:00 PM']
+    timeslots = ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM']
     
     conn = get_db_connection()
     bookings = conn.execute('SELECT day, slot, name FROM bookings').fetchall()
