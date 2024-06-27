@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 def get_db_connection():
-    conn = sqlite3.connect('bookings.db')
+    database = '/opt/telegram_bot/bookings.db'
+    conn = sqlite3.connect(f"sqlite:///{database}")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -17,7 +18,7 @@ def get_week_dates():
 @app.route('/')
 def index():
     week_dates = get_week_dates()
-    timeslots = ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM']
+    timeslots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
     
     conn = get_db_connection()
     bookings = conn.execute('SELECT day, slot, name FROM booking').fetchall()
