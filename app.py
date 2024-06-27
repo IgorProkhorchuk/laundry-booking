@@ -20,7 +20,7 @@ def index():
     timeslots = ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM']
     
     conn = get_db_connection()
-    bookings = conn.execute('SELECT day, slot, name FROM bookings').fetchall()
+    bookings = conn.execute('SELECT day, slot, name FROM booking').fetchall()
     conn.close()
     
     booking_data = {(row['day'], row['slot']): row['name'] for row in bookings}
@@ -34,7 +34,7 @@ def book():
     name = request.form['name']
     
     conn = get_db_connection()
-    conn.execute('INSERT INTO bookings (day, slot, name) VALUES (?, ?, ?)', (day, slot, name))
+    conn.execute('INSERT INTO booking (day, slot, name) VALUES (?, ?, ?)', (day, slot, name))
     conn.commit()
     conn.close()
     
