@@ -1,12 +1,14 @@
 from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, emit
 import sqlite3
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 def get_db_connection():
     database = '/opt/telegram_bot/bookings.db'
-    conn = sqlite3.connect(f"sqlite:///{database}")
+    conn = sqlite3.connect(database)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -39,7 +41,22 @@ def book():
     conn.commit()
     conn.close()
     
+    booking = {'day': day, 'slot': slot, 'name': name}
+    socketio.emit('update_bookings', booking)
+    
     return jsonify({'status': 'success', 'message': 'Booking confirmed!'})
 
+@socketio.on('connect')
+def handle_connect():
+    conn = get_db_connection()
+    bookings = conn.execute('SELECT day, slot, name FROM booking').fetchall()
+    conn.close()
+    
+    booking_data = {(row['day'], row['slot']): row['name'] for row in bookings}
+    # Convert the keys to strings
+    booking_data_str_keys = {f"{key[0]}_{key[1]}": value for key, value in booking_data.items()}
+    
+    emit('init_bookings', booking_data_str_keys)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)
