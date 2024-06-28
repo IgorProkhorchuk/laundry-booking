@@ -23,5 +23,7 @@ jobs:
           rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ laundry@195.14.122.183:/opt/flask_app
 
       - name: Restart Flask App
+        env:
+          SUDO_ASKPASS: /usr/local/bin/mysudopass
         run: |
-          ssh -o StrictHostKeyChecking=no laundry@195.14.122.183 sudo systemctl restart flask-app
+          ssh -o StrictHostKeyChecking=no laundry@195.14.122.183 'sudo -A /bin/systemctl restart flask-app'
