@@ -24,6 +24,4 @@ jobs:
 
       - name: Restart Flask App
         run: |
-          ssh -o StrictHostKeyChecking=no laundry@195.14.122.183 << 'EOF'
-          sudo systemctl restart flask_app
-          EOF
+          ssh -o StrictHostKeyChecking=no laundry@195.14.122.183 sudo systemctl restart flask-app

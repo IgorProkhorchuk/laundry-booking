@@ -46,6 +46,7 @@
             }
         }
     </style>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
     <h1>Графік прання на 10 - 14 червня</h1>
@@ -57,10 +58,10 @@
             <div class="timeslot">
                 <span>{{ slot }}</span>
                 {% if (date, slot) in booking_data %}
-                    <input type="text" value="{{ booking_data[(date, slot)] }}" readonly>
+                    <input type="text" value="{{ booking_data[(date, slot)] }}" readonly id="{{ date }}-{{ slot }}">
                     <button disabled>Booked</button>
                 {% else %}
-                    <input type="text" class="name-input" data-date="{{ date }}" data-slot="{{ slot }}">
+                    <input type="text" class="name-input" data-date="{{ date }}" data-slot="{{ slot }}" id="{{ date }}-{{ slot }}">
                     <button class="book-button" data-date="{{ date }}" data-slot="{{ slot }}">Book</button>
                 {% endif %}
             </div>
@@ -70,18 +71,34 @@
     </div>
     
     <script>
+        const socket = io();
+
+        socket.on('init_bookings', function(data) {
+            updateSlots(data);
+        });
+
+        socket.on('update_bookings', function(data) {
+            const slotId = `${data.day}-${data.slot}`;
+            const input = document.getElementById(slotId);
+            input.value = data.name;
+            input.setAttribute('readonly', 'true');
+            const button = input.nextElementSibling;
+            button.setAttribute('disabled', 'true');
+            button.textContent = 'Booked';
+        });
+
         document.querySelectorAll('.book-button').forEach(button => {
             button.addEventListener('click', () => {
                 const date = button.getAttribute('data-date');
                 const slot = button.getAttribute('data-slot');
                 const input = document.querySelector(`input[data-date="${date}"][data-slot="${slot}"]`);
                 const name = input.value.trim();
-                
+
                 if (name === '') {
                     alert('Name cannot be empty');
                     return;
                 }
-                
+
                 fetch('/book', {
                     method: 'POST',
                     headers: {
@@ -98,11 +115,26 @@
                         button.setAttribute('disabled', 'true');
                         button.textContent = 'Booked';
                     } else {
-                        alert('Error booking slot');
+                        alert(data.message);
                     }
                 });
             });
         });
+
+        function updateSlots(data) {
+            for (const [key, value] of Object.entries(data)) {
+                const [day, slot] = key.split('_');
+                const slotId = `${day}-${slot}`;
+                const input = document.getElementById(slotId);
+                if (input) {
+                    input.value = value;
+                    input.setAttribute('readonly', 'true');
+                    const button = input.nextElementSibling;
+                    button.setAttribute('disabled', 'true');
+                    button.textContent = 'Booked';
+                }
+            }
+        }
     </script>
 </body>
 </html>
