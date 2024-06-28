@@ -24,4 +24,4 @@ jobs:
 
       - name: Restart Flask App
         run: |
-          ssh -o StrictHostKeyChecking=no laundry@195.14.122.183 'export SUDO_ASKPASS=/usr/local/bin/mysudopass && sudo -A /bin/systemctl restart flask-app'
+          ssh -o StrictHostKeyChecking=no laundry@195.14.122.183 'export SUDO_ASKPASS=/usr/local/bin/mysudopass && sudo -A /bin/systemctl restart flask_app'
