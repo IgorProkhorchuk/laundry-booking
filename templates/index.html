@@ -4,48 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пральня Aparion</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .day-column {
-            flex: 1 1 calc(20% - 20px);
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .day-column h3 {
-            margin-top: 0;
-        }
-        .timeslot {
-            margin-bottom: 10px;
-        }
-        .timeslot input {
-            width: calc(100% - 70px);
-            margin-right: 5px;
-            box-sizing: border-box;
-        }
-        .timeslot button {
-            width: 65px;
-        }
-        @media (max-width: 768px) {
-            .day-column {
-                flex: 1 1 calc(50% - 20px);
-            }
-        }
-        @media (max-width: 480px) {
-            .day-column {
-                flex: 1 1 calc(100% - 20px);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="static/styles.css">
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
@@ -75,78 +34,6 @@
         {% endfor %}
     </div>
     
-    <script>
-        const socket = io();
-
-        socket.on('init_bookings', function(data) {
-            updateSlots(data);
-        });
-
-        socket.on('update_bookings', function(data) {
-            const slotId = `${data.day}-${data.slot}`;
-            const input = document.getElementById(slotId);
-            input.value = data.name;
-            input.setAttribute('readonly', 'true');
-            const button = input.nextElementSibling;
-            button.setAttribute('disabled', 'true');
-            button.textContent = 'Booked';
-        });
-
-        document.querySelectorAll('.book-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const date = button.getAttribute('data-date');
-                const slot = button.getAttribute('data-slot');
-                const input = document.querySelector(`input[data-date="${date}"][data-slot="${slot}"]`);
-                const name = input.value.trim();
-
-                if (name === '' || name.toLowerCase() === 'free') {
-                    alert('Name cannot be empty or "free"');
-                    return;
-                }
-
-                fetch('/book', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        'day': date,
-                        'slot': slot,
-                        'name': name
-                    })
-                }).then(response => response.json()).then(data => {
-                    if (data.status === 'success') {
-                        input.setAttribute('readonly', 'true');
-                        button.setAttribute('disabled', 'true');
-                        button.textContent = 'Booked';
-                    } else {
-                        alert(data.message);
-                    }
-                });
-            });
-        });
-
-        function updateSlots(data) {
-            for (const [key, value] of Object.entries(data)) {
-                const [day, slot] = key.split('_');
-                const slotId = `${day}-${slot}`;
-                const input = document.getElementById(slotId);
-                if (input) {
-                    input.value = value;
-                    if (value === '' || value.toLowerCase() === 'free') {
-                        input.removeAttribute('readonly');
-                        const button = input.nextElementSibling;
-                        button.removeAttribute('disabled');
-                        button.textContent = 'Book';
-                    } else {
-                        input.setAttribute('readonly', 'true');
-                        const button = input.nextElementSibling;
-                        button.setAttribute('disabled', 'true');
-                        button.textContent = 'Booked';
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="scripts.js"></script>
 </body>
 </html>
