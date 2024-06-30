@@ -7,7 +7,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 def get_db_connection():
-    database = '/opt/telegram_bot/bookings.db'
+    database = '/opt/laundry_db/bookings.db'
     conn = sqlite3.connect(database)
     conn.row_factory = sqlite3.Row
     return conn
@@ -21,7 +21,6 @@ def get_week_dates():
 def index():
     week_dates = get_week_dates()
     timeslots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
-    
     conn = get_db_connection()
     bookings = conn.execute('SELECT day, slot, name FROM booking').fetchall()
     conn.close()
