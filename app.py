@@ -17,9 +17,20 @@ def get_week_dates():
     start_of_week = today - timedelta(days=today.weekday())  # Get the latest Monday
     return [(start_of_week + timedelta(days=i)).strftime('%Y-%B-%d') for i in range(5)]
 
+
+def get_week_dates_and_weekdays():
+    today = datetime.now()
+    # Get the start of the current week (Monday)
+    start_of_week = today - timedelta(days=today.weekday())
+    if today.weekday() >= 5:
+        start_of_week += timedelta(days=7)  # If today is Saturday or Sunday, get next Monday
+    weekdays = ["Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя"]
+    return [(weekdays[i]) for i in range(5)]
+
+
 @app.route('/')
 def index():
-    week_dates = get_week_dates()
+    week_dates = get_week_dates_and_weekdays()
     timeslots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
     conn = get_db_connection()
     bookings = conn.execute('SELECT day, slot, name FROM booking').fetchall()
