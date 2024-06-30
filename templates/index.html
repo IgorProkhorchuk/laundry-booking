@@ -58,8 +58,13 @@
             <div class="timeslot">
                 <span>{{ slot }}</span>
                 {% if (date, slot) in booking_data %}
-                    <input type="text" value="{{ booking_data[(date, slot)] }}" readonly id="{{ date }}-{{ slot }}">
-                    <button disabled>Booked</button>
+                    {% if booking_data[(date, slot)] == "" or booking_data[(date, slot)].lower() == "free" %}
+                        <input type="text" class="name-input" data-date="{{ date }}" data-slot="{{ slot }}" id="{{ date }}-{{ slot }}" value="{{ booking_data[(date, slot)] }}">
+                        <button class="book-button" data-date="{{ date }}" data-slot="{{ slot }}">Book</button>
+                    {% else %}
+                        <input type="text" value="{{ booking_data[(date, slot)] }}" readonly id="{{ date }}-{{ slot }}">
+                        <button disabled>Booked</button>
+                    {% endif %}
                 {% else %}
                     <input type="text" class="name-input" data-date="{{ date }}" data-slot="{{ slot }}" id="{{ date }}-{{ slot }}">
                     <button class="book-button" data-date="{{ date }}" data-slot="{{ slot }}">Book</button>
@@ -94,8 +99,8 @@
                 const input = document.querySelector(`input[data-date="${date}"][data-slot="${slot}"]`);
                 const name = input.value.trim();
 
-                if (name === '') {
-                    alert('Name cannot be empty');
+                if (name === '' || name.toLowerCase() === 'free') {
+                    alert('Name cannot be empty or "free"');
                     return;
                 }
 
@@ -128,10 +133,17 @@
                 const input = document.getElementById(slotId);
                 if (input) {
                     input.value = value;
-                    input.setAttribute('readonly', 'true');
-                    const button = input.nextElementSibling;
-                    button.setAttribute('disabled', 'true');
-                    button.textContent = 'Booked';
+                    if (value === '' || value.toLowerCase() === 'free') {
+                        input.removeAttribute('readonly');
+                        const button = input.nextElementSibling;
+                        button.removeAttribute('disabled');
+                        button.textContent = 'Book';
+                    } else {
+                        input.setAttribute('readonly', 'true');
+                        const button = input.nextElementSibling;
+                        button.setAttribute('disabled', 'true');
+                        button.textContent = 'Booked';
+                    }
                 }
             }
         }
