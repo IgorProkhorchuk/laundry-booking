@@ -7,11 +7,16 @@ socket.on('init_bookings', function(data) {
 socket.on('update_bookings', function(data) {
     const slotId = `${data.day}-${data.slot}`;
     const input = document.getElementById(slotId);
-    input.value = data.name;
-    input.setAttribute('readonly', 'true');
-    const button = input.nextElementSibling;
-    button.setAttribute('disabled', 'true');
-    button.textContent = 'Booked';
+    if (data.name.toLowerCase() === 'free') {
+        input.value = '';
+        input.placeholder = 'free';
+    } else {
+        input.value = data.name;
+        input.setAttribute('readonly', 'true');
+        const button = input.nextElementSibling;
+        button.setAttribute('disabled', 'true');
+        button.textContent = 'Booked';
+    }
 });
 
 document.querySelectorAll('.book-button').forEach(button => {
@@ -54,13 +59,15 @@ function updateSlots(data) {
         const slotId = `${day}-${slot}`;
         const input = document.getElementById(slotId);
         if (input) {
-            input.value = value;
-            if (value === '' || value.toLowerCase() === 'free') {
+            if (value.toLowerCase() === 'free') {
+                input.value = '';
+                input.placeholder = 'free';
                 input.removeAttribute('readonly');
                 const button = input.nextElementSibling;
                 button.removeAttribute('disabled');
                 button.textContent = 'Book';
             } else {
+                input.value = value;
                 input.setAttribute('readonly', 'true');
                 const button = input.nextElementSibling;
                 button.setAttribute('disabled', 'true');

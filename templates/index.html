@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пральня Aparion</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
@@ -18,7 +18,7 @@
                 <span>{{ slot }}</span>
                 {% if (date, slot) in booking_data %}
                     {% if booking_data[(date, slot)] == "" or booking_data[(date, slot)].lower() == "free" %}
-                        <input type="text" class="name-input" data-date="{{ date }}" data-slot="{{ slot }}" id="{{ date }}-{{ slot }}" value="{{ booking_data[(date, slot)] }}">
+                        <input type="text" class="name-input" data-date="{{ date }}" data-slot="{{ slot }}" id="{{ date }}-{{ slot }}" placeholder="free">
                         <button class="book-button" data-date="{{ date }}" data-slot="{{ slot }}">Book</button>
                     {% else %}
                         <input type="text" value="{{ booking_data[(date, slot)] }}" readonly id="{{ date }}-{{ slot }}">
@@ -34,6 +34,6 @@
         {% endfor %}
     </div>
     
-    <script src="/static/scripts.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
