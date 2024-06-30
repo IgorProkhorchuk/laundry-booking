@@ -7,7 +7,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 def get_db_connection():
-    database = '/opt/laundry_db/bookings.db'
+    database = 'bookings.db'
     conn = sqlite3.connect(database)
     conn.row_factory = sqlite3.Row
     return conn
