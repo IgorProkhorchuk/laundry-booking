@@ -1,9 +1,24 @@
-const socket = io();
+// Initialize the WebSocket connection
+const socket = io('http://laundry-app.chost.com.ua', {
+    transports: ['websocket', 'polling']
+});
 
+// Handle connection event
+socket.on('connect', () => {
+    console.log('Connected to WebSocket server');
+});
+
+// Handle connection error event
+socket.on('connect_error', (error) => {
+    console.error('Connection Error:', error);
+});
+
+// Handle initialization of bookings
 socket.on('init_bookings', function(data) {
     updateSlots(data);
 });
 
+// Handle update of bookings
 socket.on('update_bookings', function(data) {
     const slotId = `${data.day}-${data.slot}`;
     const input = document.getElementById(slotId);
@@ -19,6 +34,7 @@ socket.on('update_bookings', function(data) {
     }
 });
 
+// Add click event listeners for booking buttons
 document.querySelectorAll('.book-button').forEach(button => {
     button.addEventListener('click', () => {
         const date = button.getAttribute('data-date');
@@ -49,10 +65,14 @@ document.querySelectorAll('.book-button').forEach(button => {
             } else {
                 alert(data.message);
             }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
         });
     });
 });
 
+// Function to update slots
 function updateSlots(data) {
     for (const [key, value] of Object.entries(data)) {
         const [day, slot] = key.split('_');
